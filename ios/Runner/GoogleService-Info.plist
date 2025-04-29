@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>147713194154-ej2o1hghciier9thte7ll3k5q0itj407.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.147713194154-ej2o1hghciier9thte7ll3k5q0itj407</string>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>147713194154-96u4lli0lu0sriqvi4q1v9n4cl49n4qq.apps.googleusercontent.com</string>
+	<key>API_KEY</key>
+	<string>AIzaSyCu-z26AJbVG-Fj7DVE-hPATd_IUI0VhlU</string>
+	<key>GCM_SENDER_ID</key>
+	<string>147713194154</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.example.halofund</string>
+	<key>PROJECT_ID</key>
+	<string>fir-fa0cb</string>
+	<key>STORAGE_BUCKET</key>
+	<string>fir-fa0cb.firebasestorage.app</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:147713194154:ios:8f840aceaa49af9b0af8d3</string>
+</dict>
+</plist>

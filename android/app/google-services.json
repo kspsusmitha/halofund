@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "147713194154",
+    "project_id": "fir-fa0cb",
+    "storage_bucket": "fir-fa0cb.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:147713194154:android:64268d51c4ffe78f0af8d3",
+        "android_client_info": {
+          "package_name": "com.example.halofund"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "147713194154-96u4lli0lu0sriqvi4q1v9n4cl49n4qq.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.halofund",
+            "certificate_hash": "1504da2e4d7f84c6afd80d59b7fdb9471789da07"
+          }
+        },
+        {
+          "client_id": "147713194154-u3umb01o2a6icqc3ck36j7caki196na0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAKZm8o2UBjanvnpE9_P1ryb0mUImlxa8o"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "147713194154-u3umb01o2a6icqc3ck36j7caki196na0.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "147713194154-ej2o1hghciier9thte7ll3k5q0itj407.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.halofund"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
