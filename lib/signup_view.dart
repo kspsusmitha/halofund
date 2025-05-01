@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:intl/intl.dart';
 
 class SignupView extends StatefulWidget {
   const SignupView({super.key});
@@ -10,12 +11,31 @@ class SignupView extends StatefulWidget {
 }
 
 class _SignupViewState extends State<SignupView> {
+  final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController = TextEditingController();
+  final TextEditingController _dateController = TextEditingController();
+  String? _selectedGender;
   bool _obscurePassword = true;
+  bool _obscureConfirmPassword = true;
 
   final _formKey = GlobalKey<FormState>();
+  final List<String> _genders = ['Male', 'Female', 'Other'];
+
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(1900),
+      lastDate: DateTime.now(),
+    );
+    if (picked != null) {
+      setState(() {
+        _dateController.text = DateFormat('yyyy-MM-dd').format(picked);
+      });
+    }
+  }
 
   void _signUp() async {
     if (!_formKey.currentState!.validate()) return;
@@ -26,7 +46,7 @@ class _SignupViewState extends State<SignupView> {
 
     if (password != confirmPassword) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Passwords do not match")),
+        const SnackBar(content: Text("Passwords do not match")),
       );
       return;
     }
@@ -37,7 +57,7 @@ class _SignupViewState extends State<SignupView> {
         password: password,
       );
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Signup successful")),
+        const SnackBar(content: Text("Signup successful")),
       );
       // Navigate to next screen if needed
       Navigator.pop(context);
@@ -53,6 +73,7 @@ class _SignupViewState extends State<SignupView> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.grey.withAlpha(50),
+        title: const Text('Sign Up'),
       ),
       body: Container(
         width: double.infinity,
@@ -84,11 +105,68 @@ class _SignupViewState extends State<SignupView> {
                   ),
                 ),
                 const SizedBox(height: 40),
+                _buildTextField(_nameController, "Enter your name", Icons.person, false),
+                const SizedBox(height: 20),
                 _buildTextField(_emailController, "Enter your email", Icons.email, false),
                 const SizedBox(height: 20),
                 _buildTextField(_passwordController, "Enter your password", Icons.lock, true),
                 const SizedBox(height: 20),
                 _buildTextField(_confirmPasswordController, "Confirm your password", Icons.lock, true),
+                const SizedBox(height: 20),
+                TextFormField(
+                  controller: _dateController,
+                  readOnly: true,
+                  decoration: InputDecoration(
+                    filled: true,
+                    fillColor: Colors.white.withOpacity(0.6),
+                    hintText: "Select date of birth",
+                    hintStyle: const TextStyle(color: Colors.grey),
+                    prefixIcon: const Icon(Icons.calendar_today, color: Colors.grey),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(30),
+                      borderSide: BorderSide.none,
+                    ),
+                  ),
+                  onTap: () => _selectDate(context),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please select your date of birth';
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 20),
+                DropdownButtonFormField<String>(
+                  value: _selectedGender,
+                  decoration: InputDecoration(
+                    filled: true,
+                    fillColor: Colors.white.withOpacity(0.6),
+                    hintText: "Select gender",
+                    hintStyle: const TextStyle(color: Colors.grey),
+                    prefixIcon: const Icon(Icons.person_outline, color: Colors.grey),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(30),
+                      borderSide: BorderSide.none,
+                    ),
+                  ),
+                  items: _genders.map((String gender) {
+                    return DropdownMenuItem<String>(
+                      value: gender,
+                      child: Text(gender),
+                    );
+                  }).toList(),
+                  onChanged: (String? newValue) {
+                    setState(() {
+                      _selectedGender = newValue;
+                    });
+                  },
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please select your gender';
+                    }
+                    return null;
+                  },
+                ),
                 const SizedBox(height: 30),
                 GestureDetector(
                   onTap: _signUp,
@@ -97,11 +175,11 @@ class _SignupViewState extends State<SignupView> {
                     width: double.infinity,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(30),
-                      gradient: LinearGradient(
+                      gradient: const LinearGradient(
                         colors: [Colors.blue, Colors.purple],
                       ),
                     ),
-                    child: Center(
+                    child: const Center(
                       child: Text(
                         "Sign Up",
                         style: TextStyle(
@@ -126,8 +204,8 @@ class _SignupViewState extends State<SignupView> {
       TextEditingController controller, String hintText, IconData icon, bool isPassword) {
     return TextFormField(
       controller: controller,
-      obscureText: isPassword ? _obscurePassword : false,
-      style: TextStyle(color: Colors.black),
+      obscureText: isPassword ? (isPassword == _passwordController ? _obscurePassword : _obscureConfirmPassword) : false,
+      style: const TextStyle(color: Colors.black),
       validator: (value) {
         if (value == null || value.trim().isEmpty) {
           return "This field is required";
@@ -144,20 +222,26 @@ class _SignupViewState extends State<SignupView> {
         filled: true,
         fillColor: Colors.white.withOpacity(0.6),
         hintText: hintText,
-        hintStyle: TextStyle(color: Colors.grey),
+        hintStyle: const TextStyle(color: Colors.grey),
         prefixIcon: Icon(icon, color: Colors.grey),
         suffixIcon: isPassword
             ? IconButton(
-          icon: Icon(
-            _obscurePassword ? Icons.visibility_off : Icons.visibility,
-            color: Colors.grey,
-          ),
-          onPressed: () {
-            setState(() {
-              _obscurePassword = !_obscurePassword;
-            });
-          },
-        )
+                icon: Icon(
+                  (isPassword == _passwordController ? _obscurePassword : _obscureConfirmPassword)
+                      ? Icons.visibility_off
+                      : Icons.visibility,
+                  color: Colors.grey,
+                ),
+                onPressed: () {
+                  setState(() {
+                    if (isPassword == _passwordController) {
+                      _obscurePassword = !_obscurePassword;
+                    } else {
+                      _obscureConfirmPassword = !_obscureConfirmPassword;
+                    }
+                  });
+                },
+              )
             : null,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(30),
