@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';
+import 'package:halofund/login_view.dart';
 
 class SignupView extends StatefulWidget {
   const SignupView({super.key});
@@ -59,8 +60,13 @@ class _SignupViewState extends State<SignupView> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Signup successful")),
       );
-      // Navigate to next screen if needed
-      Navigator.pop(context);
+      // Navigate to login screen
+      if (context.mounted) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const LoginView()),
+        );
+      }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Signup failed: ${e.toString()}")),
