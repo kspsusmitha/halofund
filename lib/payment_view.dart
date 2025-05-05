@@ -34,7 +34,6 @@ class _PaymentViewState extends State<PaymentView> {
   Future<void> _handleDonation() async {
     final campaign = widget.model;
     if (campaign == null) return;
-    final String campaignId = await _getCampaignIdByNameAndAmount(campaign.name, campaign.amount);
     final String enteredAmount = _amountController.text.trim();
     if (enteredAmount.isEmpty || double.tryParse(enteredAmount) == null) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -42,27 +41,61 @@ class _PaymentViewState extends State<PaymentView> {
       );
       return;
     }
-    final double donation = double.parse(enteredAmount);
-    try {
-      // Fetch current amount_raised
-      final docRef = FirebaseFirestore.instance.collection('patients').doc(campaignId);
-      final docSnap = await docRef.get();
-      double currentRaised = 0;
-      if (docSnap.exists && docSnap.data() != null && docSnap.data()!.containsKey('amount_raised')) {
-        currentRaised = double.tryParse(docSnap['amount_raised'].toString()) ?? 0;
+
+    // Navigate to credit card screen
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => CreditCardScreen(),
+      ),
+    );
+
+    // If payment was successful (result is true)
+    if (result == true) {
+      try {
+        final String campaignId = await _getCampaignIdByNameAndAmount(campaign.name, campaign.amount);
+        final double donation = double.parse(enteredAmount);
+        
+        // Fetch current amount_raised
+        final docRef = FirebaseFirestore.instance.collection('patients').doc(campaignId);
+        final docSnap = await docRef.get();
+        double currentRaised = 0;
+        if (docSnap.exists && docSnap.data() != null && docSnap.data()!.containsKey('amount_raised')) {
+          currentRaised = double.tryParse(docSnap['amount_raised'].toString()) ?? 0;
+        }
+        final double newRaised = currentRaised + donation;
+        await docRef.update({'amount_raised': newRaised.toStringAsFixed(2)});
+        
+        // Create updated campaign model
+        final updatedCampaign = CampaignModel(
+          amount: campaign.amount,
+          amountRaised: newRaised.toStringAsFixed(2),
+          phone: campaign.phone,
+          address: campaign.address,
+          age: campaign.age,
+          gender: campaign.gender,
+          image: campaign.image,
+          medicalCondition: campaign.medicalCondition,
+          name: campaign.name,
+          treatmentRequired: campaign.treatmentRequired,
+          doctorsDiagnosisReport: campaign.doctorsDiagnosisReport,
+          hospitalBillEstimate: campaign.hospitalBillEstimate,
+          timestamp: campaign.timestamp,
+          status: campaign.status,
+          urgency: campaign.urgency
+        );
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Thank you for your donation!')),
+        );
+        if (mounted) {
+          Navigator.pop(context, updatedCampaign); // Pass the updated model back
+        }
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Payment failed: $e')),
+        );
       }
-      final double newRaised = currentRaised + donation;
-      await docRef.update({'amount_raised': newRaised.toStringAsFixed(2)});
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Thank you for your donation!')),
-      );
-      if (mounted) {
-        Navigator.pop(context); // Go back to campaign details
-      }
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Payment failed: $e')),
-      );
     }
   }
 

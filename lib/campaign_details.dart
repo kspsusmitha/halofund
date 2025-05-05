@@ -18,6 +18,16 @@ class Campaign_Details extends StatefulWidget {
 }
 
 class _Campaign_DetailsState extends State<Campaign_Details> {
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  void updateCampaignModel(CampaignModel newModel) {
+    setState(() {
+      widget.info = newModel;
+    });
+  }
 
   Image base64ToImageWidget(String base64String) {
     var bytes = base64Decode(base64String);
@@ -176,7 +186,13 @@ class _Campaign_DetailsState extends State<Campaign_Details> {
                   child: InkWell(
                     onTap: () {
                       print("Donate");
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => PaymentView(model: widget.info),));
+                      Navigator.push(context, MaterialPageRoute(
+                        builder: (context) => PaymentView(model: widget.info),
+                      )).then((result) {
+                        if (result != null && result is CampaignModel) {
+                          updateCampaignModel(result);
+                        }
+                      });
                     },
                     child: Container(
                       margin: EdgeInsets.symmetric(vertical: 50),

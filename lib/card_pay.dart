@@ -47,16 +47,6 @@ class _CreditCardScreenState extends State<CreditCardScreen> {
             ElevatedButton(
               child: Text('Validate'),
               onPressed: () {
-                // if (formKey.currentState!.validate()) {
-                //   ScaffoldMessenger.of(context).showSnackBar(
-                //     SnackBar(content: Text('Card is valid!')),
-                //   );
-                // } else {
-                //   ScaffoldMessenger.of(context).showSnackBar(
-                //     SnackBar(content: Text('Invalid card!')),
-                //   );
-
-                // }
                 showDialog(
                   context: context,
                   builder: (BuildContext context) {
@@ -66,7 +56,8 @@ class _CreditCardScreenState extends State<CreditCardScreen> {
                       actions: [
                         TextButton(
                           onPressed: () {
-                            Navigator.push(context, MaterialPageRoute(builder: (context) => HomeView(),)); // closes the dialog
+                            Navigator.pop(context); // Close dialog
+                            Navigator.pop(context, true); // Return success to PaymentView
                           },
                           child: Text('Close'),
                         ),
