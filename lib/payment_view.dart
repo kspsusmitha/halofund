@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:halofund/home_view.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'card_pay.dart';
 
@@ -14,6 +15,8 @@ class PaymentView extends StatefulWidget {
 }
 
 class _PaymentViewState extends State<PaymentView> {
+  final TextEditingController _amountController = TextEditingController();
+
   Image base64ToImageWidget(String base64String) {
     var bytes = base64Decode(base64String);
     return Image.memory(bytes, fit: BoxFit.cover, height: 150, width: 150);
@@ -27,6 +30,56 @@ class _PaymentViewState extends State<PaymentView> {
     'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSOK-ExH64w4vaz6r2HY7kpEc0SEZKmpq7CKg&s',
   ];
   bool anonymous = false;
+
+  Future<void> _handleDonation() async {
+    final campaign = widget.model;
+    if (campaign == null) return;
+    final String campaignId = await _getCampaignIdByNameAndAmount(campaign.name, campaign.amount);
+    final String enteredAmount = _amountController.text.trim();
+    if (enteredAmount.isEmpty || double.tryParse(enteredAmount) == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please enter a valid amount.')),
+      );
+      return;
+    }
+    final double donation = double.parse(enteredAmount);
+    try {
+      // Fetch current amount_raised
+      final docRef = FirebaseFirestore.instance.collection('patients').doc(campaignId);
+      final docSnap = await docRef.get();
+      double currentRaised = 0;
+      if (docSnap.exists && docSnap.data() != null && docSnap.data()!.containsKey('amount_raised')) {
+        currentRaised = double.tryParse(docSnap['amount_raised'].toString()) ?? 0;
+      }
+      final double newRaised = currentRaised + donation;
+      await docRef.update({'amount_raised': newRaised.toStringAsFixed(2)});
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Thank you for your donation!')),
+      );
+      if (mounted) {
+        Navigator.pop(context); // Go back to campaign details
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Payment failed: $e')),
+      );
+    }
+  }
+
+  Future<String> _getCampaignIdByNameAndAmount(String name, String amount) async {
+    // This assumes name+amount is unique. Adjust as needed for your data model.
+    final query = await FirebaseFirestore.instance
+        .collection('patients')
+        .where('name', isEqualTo: name)
+        .where('amount', isEqualTo: amount)
+        .limit(1)
+        .get();
+    if (query.docs.isNotEmpty) {
+      return query.docs.first.id;
+    }
+    throw Exception('Campaign not found');
+  }
+
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
@@ -106,6 +159,8 @@ class _PaymentViewState extends State<PaymentView> {
             ),
             SizedBox(height: 20),
             TextField(
+              controller: _amountController,
+              keyboardType: TextInputType.numberWithOptions(decimal: true),
               decoration: InputDecoration(
                 hintText: "Enter Amount",
                 border: OutlineInputBorder(
@@ -179,9 +234,7 @@ class _PaymentViewState extends State<PaymentView> {
             Align(
               alignment: Alignment.center,
               child: InkWell(
-                onTap: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => CreditCardScreen(),));
-                },
+                onTap: _handleDonation,
                 child: Container(
                   alignment: Alignment.center,
                   decoration: BoxDecoration(
