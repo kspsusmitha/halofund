@@ -67,6 +67,39 @@ class _Campaign_DetailsState extends State<Campaign_Details> {
                   fontWeight: FontWeight.w700,
                   fontSize: 20
                 ),),
+                SizedBox(height: 10),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text("Raised: ₨ ${widget.info.amountRaised}",
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.grey.shade600,
+                          ),
+                        ),
+                        Text("Goal: ₨ ${widget.info.amount}",
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.grey.shade600,
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 8),
+                    LinearProgressIndicator(
+                      value: double.tryParse(widget.info.amountRaised) != null && double.tryParse(widget.info.amount) != null
+                          ? double.parse(widget.info.amountRaised) / double.parse(widget.info.amount)
+                          : 0.0,
+                      backgroundColor: Colors.grey.shade200,
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.blueAccent),
+                      minHeight: 8,
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                  ],
+                ),
                 SizedBox(
                   height: 20,
                 ),
@@ -104,7 +137,7 @@ class _Campaign_DetailsState extends State<Campaign_Details> {
                 SizedBox(
                   height: 15,
                 ),
-                _buildDownloadSection("Doctor’s Diagnosis Report",),
+                _buildDownloadSection("Doctor's Diagnosis Report",),
                 SizedBox(
                   height: 10,
                 ),

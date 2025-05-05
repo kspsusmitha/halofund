@@ -176,53 +176,56 @@ class _HomeViewState extends State<HomeView> {
 
             ),
             const SizedBox(height: 25),
-            SizedBox(
-              height: 120,
-              child: ListView.separated(
-                scrollDirection: Axis.horizontal,
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                itemCount: cat.length,
-                itemBuilder: (context, index) {
-                  return Column(
-                    children: [
-                      InkWell(
-                        onTap: () {
-                          if (index == 2) {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (context) => const CreatCampaign()),
-                            );
-                          } else if (index == 0) {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (context) => const All()),
-                            );
-                          }else if(index == 1){
-                            Navigator.push(context, MaterialPageRoute(builder: (context) => UrgentView(),));
-                          }
-                        },
-                        child: CircleAvatar(
-                          radius: 30,
-                          backgroundColor: Colors.grey.shade300,
-                          child: Icon(
-                            cat[index]["icon"] as IconData?,
-                            color: Colors.black54,
+            Center(
+              child: SizedBox(
+                height: 120,
+                width: MediaQuery.of(context).size.width * 0.8, // 80% of screen width
+                child: ListView.separated(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: cat.length,
+                  itemBuilder: (context, index) {
+                    return Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        InkWell(
+                          onTap: () {
+                            if (index == 2) {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) => const CreatCampaign()),
+                              );
+                            } else if (index == 0) {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) => const All()),
+                              );
+                            } else if(index == 1) {
+                              Navigator.push(context, MaterialPageRoute(builder: (context) => UrgentView(),));
+                            }
+                          },
+                          child: CircleAvatar(
+                            radius: 30,
+                            backgroundColor: Colors.grey.shade300,
+                            child: Icon(
+                              cat[index]["icon"] as IconData?,
+                              color: Colors.black54,
+                            ),
                           ),
                         ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        cat[index]["name"] as String,
-                        textAlign: TextAlign.center,
-                        style: GoogleFonts.poppins(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
+                        const SizedBox(height: 8),
+                        Text(
+                          cat[index]["name"] as String,
+                          textAlign: TextAlign.center,
+                          style: GoogleFonts.poppins(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                          ),
                         ),
-                      ),
-                    ],
-                  );
-                },
-                separatorBuilder: (_, __) => const SizedBox(width: 70),
+                      ],
+                    );
+                  },
+                  separatorBuilder: (_, __) => const SizedBox(width: 40), // Reduced spacing
+                ),
               ),
             ),
             const SizedBox(height: 20),
@@ -350,6 +353,7 @@ class CampaignModel {
   final bool  urgency;
   final bool  status;
   final String amount;
+  final String amountRaised;
   final String phone;
   final String address;
   final String age;
@@ -360,10 +364,11 @@ class CampaignModel {
   final String treatmentRequired;
   final String doctorsDiagnosisReport;
   final String hospitalBillEstimate;
-  final dynamic timestamp; // You can change to `Timestamp` if needed
+  final dynamic timestamp;
 
   CampaignModel({
     required this.amount,
+    required this.amountRaised,
     required this.phone,
     required this.address,
     required this.age,
@@ -382,6 +387,7 @@ class CampaignModel {
   factory CampaignModel.fromMap(Map<String, dynamic> map) {
     return CampaignModel(
       amount: map['amount'] ?? '',
+      amountRaised: map['amount_raised'] ?? '0',
       phone: map['Phone'] ?? '',
       address: map['address'] ?? '',
       age: map['age'] ?? '',
