@@ -11,6 +11,7 @@ import 'package:halofund/campaign_details.dart';
 import 'package:halofund/creat_campaign.dart';
 import 'package:halofund/urgent_view.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
+import 'package:halofund/profile_view.dart';
 
 
 
@@ -113,11 +114,19 @@ class _HomeViewState extends State<HomeView> {
       backgroundColor: const Color(0xffdad6d6),
       appBar: AppBar(
         backgroundColor: const Color(0xffefeeee),
-        leading: const Padding(
-          padding: EdgeInsets.only(left: 5.0),
-          child: CircleAvatar(
-            backgroundColor: Colors.green,
-            child: Icon(Icons.person, size: 40, color: Colors.white),
+        leading: InkWell(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const ProfileView()),
+            );
+          },
+          child: const Padding(
+            padding: EdgeInsets.only(left: 5.0),
+            child: CircleAvatar(
+              backgroundColor: Colors.green,
+              child: Icon(Icons.person, size: 40, color: Colors.white),
+            ),
           ),
         ),
         title: Text(
